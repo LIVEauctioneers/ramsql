@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/proullon/ramsql/engine/log"
+	"github.com/LIVEauctioneers/ramsql/engine/log"
 )
 
 func TestCreateTable(t *testing.T) {
