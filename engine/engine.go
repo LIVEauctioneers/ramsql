@@ -6,9 +6,9 @@ import (
 	"io"
 	"sync"
 
-	"github.com/proullon/ramsql/engine/log"
-	"github.com/proullon/ramsql/engine/parser"
-	"github.com/proullon/ramsql/engine/protocol"
+	"github.com/LIVEauctioneers/ramsql/engine/log"
+	"github.com/LIVEauctioneers/ramsql/engine/parser"
+	"github.com/LIVEauctioneers/ramsql/engine/protocol"
 )
 
 type executor func(*Engine, *parser.Decl, protocol.EngineConn) error

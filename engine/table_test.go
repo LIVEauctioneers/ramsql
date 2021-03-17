@@ -3,8 +3,8 @@ package engine
 import (
 	"testing"
 
-	"github.com/proullon/ramsql/engine/log"
-	"github.com/proullon/ramsql/engine/parser"
+	"github.com/LIVEauctioneers/ramsql/engine/log"
+	"github.com/LIVEauctioneers/ramsql/engine/parser"
 )
 
 func TestCreateTable(t *testing.T) {
