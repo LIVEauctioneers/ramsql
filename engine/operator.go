@@ -2,10 +2,11 @@ package engine
 
 import (
 	"fmt"
-	"github.com/proullon/ramsql/engine/log"
-	"github.com/proullon/ramsql/engine/parser"
 	"strconv"
 	"time"
+
+	"github.com/proullon/ramsql/engine/log"
+	"github.com/proullon/ramsql/engine/parser"
 )
 
 // Operator compares 2 values and return a boolean
@@ -24,6 +25,8 @@ func NewOperator(token int, lexeme string) (Operator, error) {
 		return lessOrEqualOperator, nil
 	case parser.GreaterOrEqualToken:
 		return greaterOrEqualOperator, nil
+	case parser.InequalityToken:
+		return inequalityOperator, nil
 	}
 
 	return nil, fmt.Errorf("Operator '%s' does not exist", lexeme)
@@ -36,7 +39,7 @@ func convToDate(t interface{}) (time.Time, error) {
 		log.Debug("convToDate> unexpected type %T\n", t)
 		return time.Time{}, fmt.Errorf("unexpected internal type %T", t)
 	case string:
-		d, err :=parser.ParseDate(string(t))
+		d, err := parser.ParseDate(string(t))
 		if err != nil {
 			return time.Time{}, fmt.Errorf("cannot parse date %v", t)
 		}
@@ -164,6 +167,16 @@ func lessThanOperator(leftValue Value, rightValue Value) bool {
 func equalityOperator(leftValue Value, rightValue Value) bool {
 
 	if fmt.Sprintf("%v", leftValue.v) == rightValue.lexeme {
+		return true
+	}
+
+	return false
+}
+
+// InequalityOperator checks if given value are not equal
+func inequalityOperator(leftValue Value, rightValue Value) bool {
+
+	if fmt.Sprintf("%v", leftValue.v) != rightValue.lexeme {
 		return true
 	}
 

@@ -510,7 +510,7 @@ func (p *parser) parseQuotedToken() (*Decl, error) {
 	quoted := false
 	quoteToken := DoubleQuoteToken
 
-	if p.is(DoubleQuoteToken) || p.is(BacktickToken){
+	if p.is(DoubleQuoteToken) || p.is(BacktickToken) {
 		quoted = true
 		quoteToken = p.cur().Token
 		if err := p.next(); err != nil {
@@ -560,7 +560,7 @@ func (p *parser) parseCondition() (*Decl, error) {
 	}
 
 	switch p.cur().Token {
-	case EqualityToken, LeftDipleToken, RightDipleToken, LessOrEqualToken, GreaterOrEqualToken:
+	case EqualityToken, LeftDipleToken, RightDipleToken, LessOrEqualToken, GreaterOrEqualToken, InequalityToken:
 		decl, err := p.consumeToken(p.cur().Token)
 		if err != nil {
 			return nil, err

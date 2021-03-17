@@ -305,7 +305,7 @@ func TestCompareDateGT(t *testing.T) {
 
 	query := "SELECT dat FROM comp WHERE dat > '2018-03-03'"
 
-	rows, err := db.Query(query, )
+	rows, err := db.Query(query)
 	if err != nil {
 		t.Fatalf("sql.Query: %s", err)
 	}
@@ -362,7 +362,7 @@ func TestCompareDateLT(t *testing.T) {
 
 	query := "SELECT dat FROM comp WHERE dat < '2019-03-03'"
 
-	rows, err := db.Query(query, )
+	rows, err := db.Query(query)
 	if err != nil {
 		t.Fatalf("sql.Query: %s", err)
 	}
@@ -895,4 +895,60 @@ func TestJSON(t *testing.T) {
 	if s.ID != "c05d13bd-9d9b-4ea1-95f2-9b11ed3a7d38" || s.Name != "test" {
 		t.Fatalf("Unexpected values (second unmarshal): %+v\n", s)
 	}
+}
+
+func TestInequality(t *testing.T) {
+	log.UseTestLogger(t)
+
+	batch := []string{
+		`CREATE TABLE user (name TEXT, surname TEXT, age INT);`,
+		`INSERT INTO user (name, surname, age) VALUES (Foo, Bar, 20);`,
+		`INSERT INTO user (name, surname, age) VALUES (John, Doe, 32);`,
+		`INSERT INTO user (name, surname, age) VALUES (Jane, Doe, 33);`,
+		`INSERT INTO user (name, surname, age) VALUES (Joe, Doe, 10);`,
+		`INSERT INTO user (name, surname, age) VALUES (Homer, Simpson, 40);`,
+		`INSERT INTO user (name, surname, age) VALUES (Marge, Simpson, 40);`,
+		`INSERT INTO user (name, surname, age) VALUES (Bruce, Wayne, 3333);`,
+	}
+
+	db, err := sql.Open("ramsql", "TestInequality")
+	if err != nil {
+		t.Fatalf("sql.Open : Error : %s\n", err)
+	}
+	defer db.Close()
+
+	for _, b := range batch {
+		_, err = db.Exec(b)
+		if err != nil {
+			t.Fatalf("sql.Exec: Error: %s\n", err)
+		}
+	}
+
+	query := `SELECT * FROM user
+			WHERE name != 'John'
+			AND age != 40`
+
+	rows, err := db.Query(query)
+	if err != nil {
+		t.Fatalf("sql.Query: %s", err)
+	}
+
+	var nb int
+	for rows.Next() {
+		var name, surname string
+		var age int
+		if err := rows.Scan(&name, &surname, &age); err != nil {
+			t.Fatalf("Cannot scan row: %s", err)
+		}
+		if name == "John" || age == 40 {
+			t.Fatalf("Unwanted row: %s %s %d", name, surname, age)
+		}
+
+		nb++
+	}
+
+	if nb != 4 {
+		t.Fatalf("Expected 4 rows, got %d", nb)
+	}
+
 }
